@@ -70,17 +70,15 @@ defmodule LagerLogger do
         _ -> Process.group_leader # if lager didn't give us a pid just pretend it's us
       end
 
-      metadata_revised = case metadata |> Keyword.fetch(:from) do
-        {:ok, :reporter} ->
+      case metadata |> Keyword.fetch(:from) do
+        {:ok, :exometer_report_larger} ->
           key_and_value = message |> String.split(":")
-          metadata |> Keyword.put(:metric_name,  key_and_value |> List.first)
-          metadata |> Keyword.put(:metric_value, key_and_value |> List.last |> String.to_float)
-          metadata
+          metadata = metadata |> Keyword.put(:metric_name,  key_and_value |> List.first)
+          metadata = metadata |> Keyword.put(:metric_value, key_and_value |> List.last |> String.to_integer)
         _ ->
-          metadata
       end
 
-      _ = notify(mode, {level, group_leader, {Logger, message, timestamp, metadata_revised}})
+      _ = notify(mode, {level, group_leader, {Logger, message, timestamp, metadata}})
       {:ok, mask}
     else
       {:ok, mask}
