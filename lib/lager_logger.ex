@@ -72,7 +72,7 @@ defmodule LagerLogger do
 
       case metadata |> Keyword.fetch(:from) do
         {:ok, :exometer_report_larger} ->
-          key_and_value = message |> String.split(":")
+          key_and_value = message |> IO.chardata_to_string |> String.split(":")
           metadata = metadata |> Keyword.put(:metric_name,  key_and_value |> List.first)
           metadata = metadata |> Keyword.put(:metric_value, key_and_value |> List.last |> String.to_integer)
         _ ->
